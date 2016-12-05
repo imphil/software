@@ -78,7 +78,7 @@ int osd_module_register_handler(struct osd_context *ctx, uint16_t id,
     cb->call = handler;
     cb->arg = arg;
 
-    return 0;
+    return OSD_SUCCESS;
 }
 
 OSD_EXPORT

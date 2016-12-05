@@ -35,6 +35,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <errno.h>
 
 static void* receiver_thread_function(void* arg);
 
@@ -90,9 +91,15 @@ static void* receiver_thread_function(void* arg) {
     int rv;
 
     while (1) {
+        // read packet header
         rv = recv(dctx->socket, packet, 2, MSG_WAITALL);
+        if (rv != 2) {
+            err(ctx, "received %d bytes instead of 2. errno = %d (%s)", rv,
+                errno, strerror(errno));
+        }
         assert(rv == 2);
 
+        // allocate memory for the remaining packet and receive it
         size = *((uint16_t*) &packet[0]);
 
         rv = recv(dctx->socket, &packet[1], size*2, MSG_WAITALL);
