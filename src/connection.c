@@ -94,14 +94,14 @@ void osd_handle_packet(struct osd_context *ctx, uint16_t *packet) {
         if ((type >> 4) == OSD_EVENT_PACKET) {
             void *parg = ctx->module_handlers[mod_id]->packet_handler.arg;
             if (!ctx->module_handlers[mod_id]->packet_handler.call) {
-                fprintf(stderr, "No module handler for module %d\n", mod_id);
+                err(ctx, "No module handler for module %d\n", mod_id);
                 return;
             }
             ctx->module_handlers[mod_id]->packet_handler.call(ctx, parg, packet);
         } else if ((type >> 4) == OSD_EVENT_TRACE) {
             void *parg = ctx->module_handlers[mod_id]->packet_handler.arg;
             if (!ctx->module_handlers[mod_id]->packet_handler.call) {
-                fprintf(stderr, "No module handler for module %d\n", mod_id);
+                err(ctx, "No module handler for module %d\n", mod_id);
                 return;
             }
             ctx->module_handlers[mod_id]->packet_handler.call(ctx, parg, packet);

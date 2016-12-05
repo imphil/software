@@ -153,7 +153,7 @@ int osd_get_memories(struct osd_context *ctx,
     size_t num_memories_i;
 
     num_memories_i = ctx->system_info->num_memories;
-    printf("found %d memories in the system\n", num_memories_i);
+    dbg(ctx, "Found %zu memories in the system", num_memories_i);
 
     memories_i = malloc(sizeof(uint16_t) * num_memories_i);
 

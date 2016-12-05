@@ -56,8 +56,24 @@ enum osd_mode {
     OSD_MODE_DAEMON
 };
 
+
+
+/**
+ * Logging function template
+ *
+ * Implement a function with this signature and pass it to osd_set_log_fn()
+ * if you want to implement custom logging.
+ */
+typedef void (*osd_log_fn)(struct osd_context *ctx,
+                           int priority, const char *file,
+                           int line, const char *fn,
+                           const char *format, va_list args);
+
 int osd_new(struct osd_context **ctx, enum osd_mode standalone,
             size_t num_mode_options, struct osd_mode_option *options);
+
+void osd_set_caller_ctx(struct osd_context *ctx, void *caller_ctx);
+void* osd_get_caller_ctx(struct osd_context *ctx);
 
 int osd_connect(struct osd_context *ctx);
 
@@ -161,6 +177,10 @@ int osd_memory_loadelf(struct osd_context *ctx, uint16_t mod, char *filename, in
 int osd_stm_log(struct osd_context *ctx, uint16_t modid, char *filename);
 
 int osd_ctm_log(struct osd_context *ctx, uint16_t modid, char *filename, char* elffile);
+
+void osd_set_log_fn(struct osd_context *ctx, osd_log_fn log_fn);
+int osd_get_log_priority(struct osd_context *ctx);
+void osd_set_log_priority(struct osd_context *ctx, int priority);
 
 #ifdef __cplusplus
 } /* extern "C" */

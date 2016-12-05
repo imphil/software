@@ -30,6 +30,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stddef.h>
+#include <ctype.h>
 
 static
 int osd_new_standalone(struct osd_context_standalone **ctx,
@@ -42,6 +43,73 @@ int osd_new_daemon(struct osd_context_daemon **ctx,
                    struct osd_mode_functions *fnc,
                    size_t num_mode_options,
                    struct osd_mode_option *options);
+
+
+
+/**
+ * Set a caller context pointer
+ *
+ * In some cases OSD executes callback functions. These functions always
+ * provide the OSD context object of type struct osd_context. To make it
+ * possible to associate the OSD context with the right context of the calling
+ * application register the context or <code>this</code> (in C++) pointer with
+ * OSD and retrieve it inside the callback using osd_get_caller_ctx().
+ *
+ * OSD does not use this pointer in any way, you're free to set it to whatever
+ * your application needs.
+ *
+ * @param ctx        the library context
+ * @param caller_ctx the caller context pointer
+ *
+ * @see osd_get_caller_ctx()
+ * @see osd_set_log_fn() for a code example using this functionality
+ *
+ * @ingroup utilities
+ */
+OSD_EXPORT
+void osd_set_caller_ctx(struct osd_context *ctx, void *caller_ctx)
+{
+    ctx->caller_ctx = caller_ctx;
+}
+
+
+
+/**
+ * Default logging function: log to STDERR
+ *
+ * @see osd_log()
+ */
+static void log_stderr(struct osd_context *ctx, int priority, const char *file,
+                       int line, const char *fn, const char *format,
+                       va_list args)
+{
+    fprintf(stderr, "osd: %s: ", fn);
+    vfprintf(stderr, format, args);
+    fprintf(stderr, "\n");
+}
+
+/**
+ * Get the log priority as integer for a priority name
+ *
+ * @param priority the priority name
+ * @return the priority as integer
+ */
+static int log_priority(const char *priority)
+{
+    char *endptr;
+    int prio;
+
+    prio = strtol(priority, &endptr, 10);
+    if (endptr[0] == '\0' || isspace(endptr[0]))
+        return prio;
+    if (strncmp(priority, "err", 3) == 0)
+        return LOG_ERR;
+    if (strncmp(priority, "info", 4) == 0)
+        return LOG_INFO;
+    if (strncmp(priority, "debug", 5) == 0)
+        return LOG_DEBUG;
+    return 0;
+}
 
 OSD_EXPORT
 int osd_new(struct osd_context **ctx, enum osd_mode mode,
@@ -56,6 +124,20 @@ int osd_new(struct osd_context **ctx, enum osd_mode mode,
 
     // Activate for low level debugging
     //c->debug_packets = 1;
+
+    /*
+     * Setup the logging infrastructure
+     */
+    c->log_fn = log_stderr;
+    c->log_priority = LOG_ERR;
+
+    /* environment overwrites config */
+    const char *env;
+    env = getenv("OSD_LOG");
+    if (env != NULL) {
+        c->log_priority = log_priority(env);
+    }
+    dbg(c, "log_priority=%d\n", c->log_priority);
 
     if (mode == OSD_MODE_STANDALONE) {
         return osd_new_standalone(&c->ctx.standalone, &c->functions,
