@@ -94,6 +94,27 @@ int osd_module_register_handler(struct osd_context *ctx, uint16_t id,
     return OSD_SUCCESS;
 }
 
+/**
+ * Unregister a packet handler
+ *
+ * @param ctx the library context
+ * @param id the module ID the handler reacts on
+ * @param type the type of events the handler reacts on
+ * @return 0 on success
+ * @return any other value indicates an error
+ *
+ * @see osd_module_register_handler()
+ */
+int osd_module_unregister_handler(struct osd_context *ctx, uint16_t id,
+                                  enum osd_event_type type) {
+    struct module_callback *cb;
+    cb = &ctx->module_handlers[id]->packet_handler;
+
+    cb->call = NULL;
+    cb->arg = NULL;
+    return OSD_SUCCESS;
+}
+
 OSD_EXPORT
 int osd_reset_system(struct osd_context *ctx, int halt_cores) {
     uint16_t scm;
