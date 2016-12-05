@@ -115,6 +115,7 @@ struct osd_context {
     struct {
         pthread_mutex_t lock;
         pthread_cond_t cond_complete;
+        int complete;
         size_t size;
         size_t count;
         uint8_t *data;
