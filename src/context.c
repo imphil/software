@@ -111,6 +111,9 @@ static int log_priority(const char *priority)
     return 0;
 }
 
+/**
+ * Create new library context
+ */
 OSD_EXPORT
 int osd_new(struct osd_context **ctx, enum osd_mode mode,
             size_t num_mode_options, struct osd_mode_option *options) {

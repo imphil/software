@@ -53,6 +53,12 @@ int osd_connect(struct osd_context *ctx) {
     return OSD_SUCCESS;
 }
 
+/**
+ * Send an OSD packet
+ *
+ * The packet must be properly formatted according to the OSD specification.
+ * The length is extracted from the packet header.
+ */
 OSD_EXPORT
 int osd_send_packet(struct osd_context *ctx, uint16_t *packet) {
     return ctx->functions.send(ctx, packet);

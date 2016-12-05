@@ -63,6 +63,19 @@ int claim_daemon(struct osd_context *ctx, uint16_t id) {
     return 0;
 }
 
+/**
+ * Register a handler function for incoming packets in a given module
+ *
+ * @param ctx the library context
+ * @param id the module ID the handler reacts on
+ * @param type the type of events the handler reacts on
+ * @param arg argument passed to the handler callback function
+ * @param handler the handler itself
+ * @return 0 on success
+ * @return any other value indicates an error
+ *
+ * @see osd_module_register_handler()
+ */
 OSD_EXPORT
 int osd_module_register_handler(struct osd_context *ctx, uint16_t id,
                                 enum osd_event_type type, void *arg,
